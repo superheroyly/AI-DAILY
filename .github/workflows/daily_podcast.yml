@@ -43,6 +43,9 @@ jobs:
             cp -r gh-pages-data/* output/ 2>/dev/null || true
             # 清理临时 worktree
             git worktree remove gh-pages-data
+            # 删除 processed.json，确保文章会被重新处理并用最新代码重新生成 RSS
+            rm -f output/data/processed.json
+            echo "🔄 Cleared processed.json to force RSS regeneration"
           else
             echo "ℹ️ No gh-pages branch found, starting fresh"
             mkdir -p output
