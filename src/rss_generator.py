@@ -109,6 +109,8 @@ class RSSGenerator:
         etree.SubElement(channel, "description").text = self.podcast["description"]
         etree.SubElement(channel, "link").text = self.base_url
         etree.SubElement(channel, "language").text = self.podcast["language"]
+        etree.SubElement(channel, "copyright").text = f"© {datetime.now(CST).year} {self.podcast['author']}"
+        etree.SubElement(channel, "author").text = self.podcast["author"]
         etree.SubElement(channel, "generator").text = "AI Daily Podcast Generator"
 
         # 最后构建时间
@@ -125,8 +127,11 @@ class RSSGenerator:
         cover_url = f"{self.base_url}/{self.podcast['cover_filename']}"
         etree.SubElement(channel, _itunes("image"), href=cover_url)
 
-        # 分类
-        etree.SubElement(channel, _itunes("category"), text=self.podcast["category"])
+        # 分类（Apple Podcasts 要求 category + subcategory）
+        category = self.podcast["category"]
+        subcategory = self.podcast.get("subcategory", "Tech News")
+        cat_elem = etree.SubElement(channel, _itunes("category"), text=category)
+        etree.SubElement(cat_elem, _itunes("category"), text=subcategory)
 
         # Owner
         owner = etree.SubElement(channel, _itunes("owner"))

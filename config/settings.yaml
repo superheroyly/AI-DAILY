@@ -11,6 +11,7 @@ podcast:
   email: "liuyiyang.io11@gmail.com"
   language: "zh-cn"
   category: "Technology"
+  subcategory: "Tech News"
   explicit: false
   # 封面图片相对于 GitHub Pages 根目录的路径
   cover_filename: "cover.jpg"
