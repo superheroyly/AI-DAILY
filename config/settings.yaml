@@ -1,0 +1,54 @@
+# ============================================
+# AI 日报 - 播客自动化系统配置
+# ============================================
+
+# --- 播客元信息 ---
+podcast:
+  title: "AI 日报"
+  subtitle: "每日 AI 前沿速递"
+  description: "每天 5 分钟，速览全球 AI 最新动态。内容来源于 The AI Valley，由 AI 翻译整理并语音播报。"
+  author: "AI Daily"
+  email: "liuyiyang.io11@gmail.com"
+  language: "zh-cn"
+  category: "Technology"
+  explicit: false
+  # 封面图片相对于 GitHub Pages 根目录的路径
+  cover_filename: "cover.jpg"
+
+# --- 数据源 ---
+source:
+  archive_url: "https://www.theaivalley.com/archive"
+  base_url: "https://www.theaivalley.com"
+  # 请求头，模拟浏览器
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+# --- DeepSeek API ---
+deepseek:
+  # API Key 从环境变量 DEEPSEEK_API_KEY 读取
+  base_url: "https://api.deepseek.com"
+  model: "deepseek-chat"
+  temperature: 0.7
+  max_tokens: 4096
+
+# --- TTS 语音合成 ---
+tts:
+  voice: "zh-CN-XiaoxiaoNeural"  # 女声，自然甜美
+  rate: "+0%"                     # 语速调整
+  volume: "+0%"                   # 音量调整
+  # 段落间停顿（毫秒）
+  paragraph_pause_ms: 800
+
+# --- 输出路径（相对于项目根目录）---
+output:
+  base_dir: "output"
+  audio_dir: "output/audio"
+  feed_dir: "output/feed"
+  data_dir: "output/data"
+  articles_dir: "output/data/articles"
+  processed_file: "output/data/processed.json"
+  feed_filename: "podcast.xml"
+
+# --- GitHub Pages ---
+# 优先从环境变量 PODCAST_BASE_URL 读取，否则使用下面的默认值
+github_pages:
+  base_url: "https://superheroyly.github.io/AI-DAILY"

@@ -1,0 +1,193 @@
+# AI 日报 - GitHub Actions 自动化工作流
+# 每天早上 7:00 (CST, UTC+8) 自动运行
+# 即 UTC 前一天 23:00
+
+name: Daily AI Podcast
+
+on:
+  # 定时触发：UTC 23:00 = CST 07:00
+  schedule:
+    - cron: '0 23 * * *'
+  # 手动触发（用于测试）
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: '指定抓取日期 (格式: "Mar 26, 2026")，留空则使用当天'
+        required: false
+        default: ''
+
+# 权限设置
+permissions:
+  contents: write
+  pages: write
+  issues: write
+
+jobs:
+  generate-podcast:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. 检出代码
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      # 2. 恢复已有的 output 数据（从 gh-pages 分支）
+      - name: Restore output data from gh-pages
+        run: |
+          git fetch origin gh-pages || true
+          if git rev-parse --verify origin/gh-pages > /dev/null 2>&1; then
+            echo "📂 Restoring existing output from gh-pages..."
+            git worktree add gh-pages-data origin/gh-pages
+            # 复制已有数据到 output 目录
+            mkdir -p output
+            cp -r gh-pages-data/* output/ 2>/dev/null || true
+            # 清理临时 worktree
+            git worktree remove gh-pages-data
+          else
+            echo "ℹ️ No gh-pages branch found, starting fresh"
+            mkdir -p output
+          fi
+
+      # 3. 安装 Python
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # 4. 安装依赖
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # 5. 复制封面到 output 目录
+      - name: Copy podcast cover
+        run: cp assets/cover.jpg output/cover.jpg 2>/dev/null || echo "⚠️ No cover.jpg found"
+
+      # 6. 验证 Secret 是否存在
+      - name: Verify DEEPSEEK_API_KEY
+        env:
+          KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "❌ DEEPSEEK_API_KEY secret is not set!"
+            exit 1
+          fi
+          echo "✅ DEEPSEEK_API_KEY is configured"
+
+      # 7. 运行生成流水线
+      - name: Run podcast pipeline
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PODCAST_BASE_URL: "https://superheroyly.github.io/AI-DAILY"
+          TZ: Asia/Shanghai
+        run: |
+          if [ -n "${{ github.event.inputs.target_date }}" ]; then
+            python main.py --date "${{ github.event.inputs.target_date }}"
+          else
+            python main.py
+          fi
+
+      # 8. 创建 GitHub Pages 入口页面
+      - name: Generate index.html
+        run: |
+          cat > output/index.html << 'HTMLEOF'
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>AI 日报 - 每日 AI 前沿速递</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+                color: #e0e0e0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .container {
+                text-align: center;
+                padding: 3rem 2rem;
+                max-width: 600px;
+              }
+              h1 {
+                font-size: 2.5rem;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 1rem;
+              }
+              p { color: #aaa; margin-bottom: 2rem; line-height: 1.6; }
+              a.rss-link {
+                display: inline-block;
+                padding: 0.8rem 2rem;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                text-decoration: none;
+                border-radius: 50px;
+                font-weight: 600;
+                transition: transform 0.2s, box-shadow 0.2s;
+              }
+              a.rss-link:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🎙️ AI 日报</h1>
+              <p>每天 5 分钟，速览全球 AI 最新动态。<br>内容来源于 The AI Valley，由 AI 翻译整理并语音播报。</p>
+              <a class="rss-link" href="feed/podcast.xml">📡 订阅 RSS Feed</a>
+            </div>
+          </body>
+          </html>
+          HTMLEOF
+
+      # 9. 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: '🎙️ AI 日报更新'
+
+      # 10. 输出结果摘要
+      - name: Summary
+        run: |
+          echo "## 🎙️ AI 日报生成摘要" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 RSS Feed: https://superheroyly.github.io/AI-DAILY/feed/podcast.xml" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏠 主页: https://superheroyly.github.io/AI-DAILY/" >> $GITHUB_STEP_SUMMARY
+          if [ -d output/audio ]; then
+            echo "- 🎵 音频文件:" >> $GITHUB_STEP_SUMMARY
+            ls -la output/audio/*.mp3 2>/dev/null | awk '{print "  - " $NF " (" $5 " bytes)"}' >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ── 失败通知：创建 GitHub Issue ──
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    needs: generate-podcast
+    if: failure()
+    permissions:
+      issues: write
+    steps:
+      - name: Create failure issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().slice(0, 10);
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 AI 日报生成失败 - ${date}`,
+              body: `## 流水线执行失败\n\n- **日期**: ${date}\n- **运行记录**: [查看详情](${runUrl})\n- **触发方式**: ${context.eventName}\n\n请检查日志排查问题。`,
+              labels: ['bug', 'automation']
+            });
