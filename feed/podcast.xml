@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:itunes="http://www.itunes.apple.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+  <channel>
+    <title>AI 日报</title>
+    <description>每天 5 分钟，速览全球 AI 最新动态。内容来源于 The AI Valley，由 AI 翻译整理并语音播报。</description>
+    <link>https://superheroyly.github.io/AI-DAILY</link>
+    <language>zh-cn</language>
+    <generator>AI Daily Podcast Generator</generator>
+    <lastBuildDate>Wed, 01 Apr 2026 10:03:07 +0800</lastBuildDate>
+    <itunes:author>AI Daily</itunes:author>
+    <itunes:subtitle>每日 AI 前沿速递</itunes:subtitle>
+    <itunes:summary>每天 5 分钟，速览全球 AI 最新动态。内容来源于 The AI Valley，由 AI 翻译整理并语音播报。</itunes:summary>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:image href="https://superheroyly.github.io/AI-DAILY/cover.jpg"/>
+    <itunes:category text="Technology"/>
+    <itunes:owner>
+      <itunes:name>AI Daily</itunes:name>
+      <itunes:email>liuyiyang.io11@gmail.com</itunes:email>
+    </itunes:owner>
+    <itunes:type>episodic</itunes:type>
+    <item>
+      <title>AI 日报 2026-03-30</title>
+      <description>大家好，欢迎收听 AI 日报，今天是2026年4月1日，星期三。我是你们的 AI 新闻播报员小 AI。今天的 AI 世界又有哪些新动态呢？让我们一起来看看。 首先来看今天的头条：语言障碍可能真的要成为历史了。 谷歌近日正式扩展了其“实时翻译”功能。这项由谷歌自家大模型 Gemini 驱动的功能，能让你通过耳机实时听到对话的翻译。而且，与苹果的方案不同，它几乎兼容市...</description>
+      <enclosure url="https://superheroyly.github.io/AI-DAILY/audio/ai-daily-2026-03-30.mp3" length="1811664" type="audio/mpeg"/>
+      <guid isPermaLink="false">ai-daily-2026-03-30</guid>
+      <pubDate>Mon, 30 Mar 2026 07:00:00 +0800</pubDate>
+      <itunes:title>AI 日报 2026-03-30</itunes:title>
+      <itunes:summary>大家好，欢迎收听 AI 日报，今天是2026年4月1日，星期三。我是你们的 AI 新闻播报员小 AI。今天的 AI 世界又有哪些新动态呢？让我们一起来看看。 首先来看今天的头条：语言障碍可能真的要成为历史了。 谷歌近日正式扩展了其“实时翻译”功能。这项由谷歌自家大模型 Gemini 驱动的功能，能让你通过耳机实时听到对话的翻译。而且，与苹果的方案不同，它几乎兼容市...</itunes:summary>
+      <itunes:duration>05:01</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+      <itunes:episodeType>full</itunes:episodeType>
+    </item>
+  </channel>
+</rss>
