@@ -140,6 +140,9 @@ class RSSGenerator:
 
         etree.SubElement(channel, _itunes("type")).text = "episodic"
 
+        # 更新频率（Apple Podcasts 要求）
+        etree.SubElement(channel, _itunes("new-feed-url")).text = f"{self.base_url}/feed/{self.output_cfg['feed_filename']}"
+
         return rss
 
     def _load_existing_feed(self) -> tuple[etree._Element | None, list[etree._Element]]:
